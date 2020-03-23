@@ -1,4 +1,4 @@
-import { Button, Card, List, Typography } from 'antd';
+import { Button, Card, List, Typography, message, notification } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import React, { Component } from 'react';
 
@@ -22,22 +22,23 @@ class ProjectList extends React.Component {
     componentDidMount() {
         request.get('http://localhost:8080/api/v1/projects', {}).then(res => {
             console.log('项目列表', res);
-            if (res.status === 200) {
+            if (res && res.status === 200) {
                 res.data.forEach((item, index) => {
                     item.avatar = 'https://sem.g3img.com/g3img/ntdljy888/c2_20171019113746_28237.jpg';
                 })
                 this.setState({
+                    loading: false,
                     projectList: res.data || []
+                })
+            } else {
+                this.setState({
+                    loading: false
                 })
             }
         });
     }
 
     render() {
-        const {
-            loading,
-        } = this.props;
-
         const content = (
             <div className={styles.pageHeaderContent}>
                 <p>
@@ -77,7 +78,7 @@ class ProjectList extends React.Component {
                 <div className={styles.cardList}>
                     <List
                         rowKey="id"
-                        loading={loading}
+                        loading={this.state.loading}
                         grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
                         dataSource={[nullData, ...this.state.projectList]}
                         renderItem={item => {
@@ -87,7 +88,18 @@ class ProjectList extends React.Component {
                                         <Card
                                             hoverable
                                             className={styles.card}
-                                            actions={[<a key="option1">操作一</a>, <a key="option2">操作二</a>]}
+                                            actions={
+                                                [<a key="option1" onClick={
+                                                    () => message.success('操作一')
+                                                }>详情</a>,
+                                                <a key="option2"
+                                                    onClick={
+                                                        () => notification.error({
+                                                            message: '操作二',
+                                                            description: '亲，您准备干什么呢',
+                                                        })
+                                                    }
+                                                >同步</a>]}
                                         >
                                             <Card.Meta
                                                 avatar={<img alt="" className={styles.cardAvatar} src={item.avatar} />}
@@ -105,15 +117,15 @@ class ProjectList extends React.Component {
                             return (
                                 <List.Item>
                                     <Button type="dashed" className={styles.newButton}>
-                                        <PlusOutlined /> 新增产品
+                                        <PlusOutlined /> 新增项目
                                     </Button>
-                                </List.Item>
+                                </List.Item >
                             );
                         }}
                     />
-                </div>
+                </div >
 
-            </PageHeaderWrapper>
+            </PageHeaderWrapper >
         );
     }
 }

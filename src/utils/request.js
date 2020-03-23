@@ -28,7 +28,6 @@ const codeMessage = {
 
 const errorHandler = error => {
   const { response } = error;
-
   if (response && response.status) {
     const errorText = codeMessage[response.status] || response.statusText;
     const { status, url } = response;
@@ -42,7 +41,6 @@ const errorHandler = error => {
       message: '网络异常',
     });
   }
-
   return response;
 };
 /**

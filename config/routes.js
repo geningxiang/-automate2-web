@@ -52,10 +52,61 @@ export default  [
               component: './ListTableList',
             },
             {
-              name: '项目',
-              icon: 'table',
-              path: '/projects',
-              component: './project/list',
+              name: '应用管理',
+              icon: 'ApartmentOutlined',
+              path: '/server',
+              routes: [
+                {
+                  path: '/server/list',
+                  name: '服务器列表',
+                  icon: 'CloudServerOutlined',
+                  component: './server/list',
+                },
+                {
+                  path: '/server/applicationList',
+                  name: '应用列表',
+                  icon: 'AppstoreOutlined',
+                  component: './Welcome',
+                },
+                {
+                  path: '/server/application/updateLog',
+                  name: '更新记录',
+                  icon: 'ExceptionOutlined',
+                  component: './Welcome',
+                },
+              ],
+            },
+            {
+              name: '项目管理',
+              icon: 'ProjectOutlined',
+              path: '/project',
+              routes: [
+                {
+                  path: '/project/list',
+                  name: '项目列表',
+                  icon: 'ProfileOutlined',
+                  component: './project/list',
+                },
+              ],
+            },
+            {
+              name: 'MAVEN',
+              icon: 'BankOutlined',
+              path: '/mvn',
+              routes: [
+                {
+                  path: '/mvn/list',
+                  name: '私有库',
+                  icon: 'smile',
+                  component: './project/list',
+                },
+                {
+                  path: '/mvn/log',
+                  name: 'deploy记录',
+                  icon: 'smile',
+                  component: './project/list',
+                },
+              ],
             },
             {
               component: './404',
