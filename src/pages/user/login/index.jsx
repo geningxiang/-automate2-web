@@ -42,7 +42,7 @@ const Login = props => {
 
           <UserName
             name="userName"
-            placeholder="用户名: admin or user"
+            placeholder="用户名"
             rules={[
               {
                 required: true,
@@ -51,8 +51,8 @@ const Login = props => {
             ]}
           />
           <Password
-            name="password"
-            placeholder="密码: ant.design"
+            name="passWord"
+            placeholder="密码"
             rules={[
               {
                 required: true,
@@ -107,10 +107,10 @@ const Login = props => {
         </div>
         <Submit loading={submitting}>登录</Submit>
         <div className={styles.other}>
-          其他登录方式
-          <AlipayCircleOutlined className={styles.icon} />
+          {/* 其他登录方式 */}
+          {/* <AlipayCircleOutlined className={styles.icon} />
           <TaobaoCircleOutlined className={styles.icon} />
-          <WeiboCircleOutlined className={styles.icon} />
+          <WeiboCircleOutlined className={styles.icon} /> */}
           <Link className={styles.register} to="/user/register">
             注册账户
           </Link>

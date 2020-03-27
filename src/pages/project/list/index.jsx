@@ -1,86 +1,50 @@
-import { Button, Card, List, Typography, message, notification } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { Button, Card, List, Typography, message, notification, Modal, Form, Input, InputNumber, Radio } from 'antd';
+import { PlusOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import React, { Component } from 'react';
 
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import { connect } from 'dva';
 import request from '../../../utils/request';
 import styles from './style.less';
+import * as projectService from '@/services/project';
+import ProjectCreateModal from '../components/projectCreate';
+import { router } from 'umi';
 
 const { Paragraph } = Typography;
+
 
 class ProjectList extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            loading: true,
-            projectList: []
+            modalVisible: false,
         };
+
+        this.modalStatusChangeHandle = this.modalStatusChangeHandle.bind(this);
     }
 
     componentDidMount() {
-        request.get('http://localhost:8080/api/v1/projects', {}).then(res => {
-            console.log('项目列表', res);
-            if (res && res.status === 200) {
-                res.data.forEach((item, index) => {
-                    item.avatar = 'https://sem.g3img.com/g3img/ntdljy888/c2_20171019113746_28237.jpg';
-                })
-                this.setState({
-                    loading: false,
-                    projectList: res.data || []
-                })
-            } else {
-                this.setState({
-                    loading: false
-                })
-            }
+        this.props.dispatch({
+          type: 'project/queryProjectAllEffect'
         });
     }
 
+    modalStatusChangeHandle(isShow) {
+        this.setState({ modalVisible: !!isShow });
+    }
+
     render() {
-        const content = (
-            <div className={styles.pageHeaderContent}>
-                <p>
-                    段落示意：蚂蚁金服务设计平台 ant.design，用最小的工作量，无缝接入蚂蚁金服生态，
-                    提供跨越设计与开发的体验解决方案。
-        </p>
-                <div className={styles.contentLink}>
-                    <a>
-                        <img alt="" src="https://gw.alipayobjects.com/zos/rmsportal/MjEImQtenlyueSmVEfUD.svg" />{' '}
-            快速开始
-          </a>
-                    <a>
-                        <img alt="" src="https://gw.alipayobjects.com/zos/rmsportal/NbuDUAuBlIApFuDvWiND.svg" />{' '}
-            产品简介
-          </a>
-                    <a>
-                        <img alt="" src="https://gw.alipayobjects.com/zos/rmsportal/ohOEPSYdDTNnyMbGuyLb.svg" />{' '}
-            产品文档
-          </a>
-                </div>
-            </div>
-        );
-
-        const extraContent = (
-            <div className={styles.extraImg}>
-                <img
-                    alt="这是一个标题"
-                    src="https://gw.alipayobjects.com/zos/rmsportal/RzwpdLnhmvDJToTdfDPe.png"
-                />
-            </div>
-        );
-
         const nullData = {};
-
+        console.log('this.props.project', this.props.project);
         return (
-            <PageHeaderWrapper content={content} extraContent={extraContent}>
+            <PageHeaderWrapper >
                 <div className={styles.cardList}>
                     <List
                         rowKey="id"
-                        loading={this.state.loading}
+                        loading={this.props.queryProjecting}
                         grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
-                        dataSource={[nullData, ...this.state.projectList]}
+                        dataSource={[nullData, ...this.props.project.projectList]}
                         renderItem={item => {
                             if (item && item.id) {
                                 return (
@@ -90,7 +54,13 @@ class ProjectList extends React.Component {
                                             className={styles.card}
                                             actions={
                                                 [<a key="option1" onClick={
-                                                    () => message.success('操作一')
+                                                    () =>
+                                                        router.push({
+                                                            pathname: '/project/detail',
+                                                            query: {
+                                                                projectId: item.id,
+                                                            },
+                                                        })
                                                 }>详情</a>,
                                                 <a key="option2"
                                                     onClick={
@@ -102,11 +72,11 @@ class ProjectList extends React.Component {
                                                 >同步</a>]}
                                         >
                                             <Card.Meta
-                                                avatar={<img alt="" className={styles.cardAvatar} src={item.avatar} />}
+                                                avatar={<img alt="" className={styles.cardAvatar} src='https://sem.g3img.com/g3img/ntdljy888/c2_20171019113746_28237.jpg' />}
                                                 title={<a>{item.name}</a>}
                                                 description={
                                                     <Paragraph className={styles.item} ellipsis={{ rows: 3 }}>
-                                                        {item.remark}
+                                                        {item.description}
                                                     </Paragraph>
                                                 }
                                             />
@@ -116,7 +86,7 @@ class ProjectList extends React.Component {
                             }
                             return (
                                 <List.Item>
-                                    <Button type="dashed" className={styles.newButton}>
+                                    <Button type="dashed" className={styles.newButton} onClick={() => this.modalStatusChangeHandle(true)}>
                                         <PlusOutlined /> 新增项目
                                     </Button>
                                 </List.Item >
@@ -125,9 +95,19 @@ class ProjectList extends React.Component {
                     />
                 </div >
 
+                <ProjectCreateModal
+                    visible={this.state.modalVisible}
+                    modalStatusChangeHandle={this.modalStatusChangeHandle}
+                    onProjectCreated={this.queryProjectList}
+                />
+
             </PageHeaderWrapper >
         );
     }
 }
 
-export default ProjectList;
+export default connect(({ project, loading }) => ({
+    project,
+    queryProjecting: loading.effects['project/queryProjectAllEffect'],
+  }))(ProjectList);
+  

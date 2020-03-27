@@ -1,8 +1,8 @@
 import request from '@/utils/request';
-export async function fakeAccountLogin(params) {
-  return request('/api/login/account', {
+export async function fakeAccountLogin(data) {
+  return request('/api/v1/user/login', {
     method: 'POST',
-    data: params,
+    params: data,
   });
 }
 export async function getFakeCaptcha(mobile) {
