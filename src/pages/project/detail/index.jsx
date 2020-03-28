@@ -1,9 +1,42 @@
 import React from 'react';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
-import { Row, Col, Card, Descriptions, Table, Divider } from 'antd';
+import { Row, Col, Card, Descriptions, Table, Divider, Button, Tag } from 'antd';
 import { connect } from 'dva';
 
 const gutter = [16, 16];
+
+const branchTableColumns = [
+    {
+        title: '分支',
+        dataIndex: 'branchName',
+        key: 'branchName',
+    },
+    {
+        title: '最后提交SHA',
+        key: 'lastCommitId',
+        render: (data, row, index) => (
+            <Tag color="magenta">{data.lastCommitId.substring(0, 10)}</Tag>
+        )
+    },
+    {
+        title: '最后提交时间',
+        dataIndex: 'lastCommitTime',
+        key: 'lastCommitTime',
+    },
+    {
+        title: '最后提交者',
+        dataIndex: 'lastCommitUser',
+        key: 'lastCommitUser',
+    },
+    {
+        title: '操作',
+        key: 'action',
+        render: (text, record) => (
+            <Button>查看记录</Button>
+        ),
+    },
+];
+
 class ProjectDetail extends React.Component {
     constructor(props) {
         super(props);
@@ -17,56 +50,24 @@ class ProjectDetail extends React.Component {
             type: 'project/queryProjectEffect',
             payload: { projectId },
         });
+
+        this.props.dispatch({
+            type: 'project/queryBranchListEffect',
+            payload: { projectId },
+        });
     }
 
     render() {
-
-        const branchTable = {
-            dataSource: [
-                {
-                    branch: 'master',
-                    lastCommitMsg: ' 改造RPC调用',
-                    lastCommitTime: '2020-03-27',
-                    lastCommitUser: 'genx'
-                },
-                {
-                    branch: 'develop',
-                    lastCommitMsg: '持仓、资金 返回字段修复，加入一些计算：合约乘数、开仓均价、持仓均价等...',
-                    lastCommitTime: '2020-02-27',
-                    lastCommitUser: 'genx'
-                },
-            ], columns: [
-                {
-                    title: '分支',
-                    dataIndex: 'branch',
-                    key: 'branch',
-                },
-                {
-                    title: '最后提交备注',
-                    dataIndex: 'lastCommitMsg',
-                    key: 'lastCommitMsg',
-                },
-                {
-                    title: '最后提交时间',
-                    dataIndex: 'lastCommitTime',
-                    key: 'lastCommitTime',
-                },
-                {
-                    title: '最后提交者',
-                    dataIndex: 'lastCommitUser',
-                    key: 'lastCommitUser',
-                },
-            ]
-        };
-
         const containerTable = {
             dataSource: [
                 {
+                    id: 1,
                     serverName: '测试环境190',
                     name: '测试环境190-Touch-1',
                     version: '3.0.0 | ea0d16f004c0035402ab699e097db93d20a82c5e',
                 },
                 {
+                    id: 2,
                     serverName: '预发布环境202',
                     name: '预发布环境202-Touch-1',
                     version: '3.0.0 | ea0d16f004c0035402ab699e097db93d20a82c5e',
@@ -91,6 +92,7 @@ class ProjectDetail extends React.Component {
         };
 
         const currentProject = this.props.project.currentProject || {};
+
         return <PageHeaderWrapper >
 
             <Row gutter={gutter}>
@@ -105,26 +107,31 @@ class ProjectDetail extends React.Component {
                 </Col>
                 <Col span={12} >
                     <Card title='分支列表'>
-                        <Table {...branchTable} pagination={false} />
+                        <Table
+                            loading={this.props.branchListLoading}
+                            dataSource={this.props.project.currentBranchList || []}
+                            columns={branchTableColumns}
+                            rowKey='id'
+                            pagination={false} />
                     </Card>
                 </Col>
             </Row>
             <Row gutter={gutter}>
                 <Col span={12}>
                     <Card title='容器列表'>
-                        <Table {...containerTable} pagination={false} />
+                        <Table {...containerTable} rowKey='id' pagination={false} />
                     </Card>
                 </Col>
                 <Col span={12}>
                     <Card title='流水线列表'>
-                        <Table {...containerTable} pagination={false} />
+                        <Table {...containerTable} rowKey='id' pagination={false} />
                     </Card>
                 </Col>
             </Row>
             <Row gutter={gutter}>
                 <Col span={24}>
                     <Card title='流水线执行记录'>
-                        <Table {...containerTable} />
+                        <Table {...containerTable} rowKey='id' />
                     </Card>
                 </Col>
             </Row>
@@ -135,5 +142,6 @@ class ProjectDetail extends React.Component {
 
 export default connect(({ project, loading }) => ({
     project,
-    projectLoading: loading.effects['project/queryProjectEffect']
+    projectLoading: loading.effects['project/queryProjectEffect'],
+    branchListLoading: loading.effects['project/queryBranchListEffect']
 }))(ProjectDetail);

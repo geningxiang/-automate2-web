@@ -12,6 +12,13 @@ export async function getById(projectId){
   });
 }
 
+export async function getBranchList(projectId){
+  return request(`/api/v1/project/${projectId}/branches`, {
+    method: 'GET'
+  });
+}
+
+
 
 export async function create(data) {
   return request('/api/v1/project', {

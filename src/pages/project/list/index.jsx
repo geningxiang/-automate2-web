@@ -36,7 +36,6 @@ class ProjectList extends React.Component {
 
     render() {
         const nullData = {};
-        console.log('this.props.project', this.props.project);
         return (
             <PageHeaderWrapper >
                 <div className={styles.cardList}>
@@ -44,7 +43,7 @@ class ProjectList extends React.Component {
                         rowKey="id"
                         loading={this.props.queryProjecting}
                         grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
-                        dataSource={[nullData, ...this.props.project.projectList]}
+                        dataSource={[ ...this.props.project.projectList, nullData]}
                         renderItem={item => {
                             if (item && item.id) {
                                 return (
