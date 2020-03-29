@@ -5,8 +5,6 @@ const ProjectModel = {
   state: {
     projectList: [],
     currentProject: {},
-    currentBranchList:[],
-    
   },
   reducers: {
     saveProjectList(state, { payload: data }) {
@@ -15,9 +13,7 @@ const ProjectModel = {
     saveCurrentProject(state, { payload: data }) {
       return { ...state, currentProject: data || {} };
     },
-    saveCurrentBranchList(state, { payload: data }) {
-      return { ...state, currentBranchList: data || [] };
-    },
+
   },
   effects: {
     *queryProjectAllEffect({ type, payload }, { call, put }) {
@@ -42,19 +38,7 @@ const ProjectModel = {
         payload: data,
       });
     },
-    *queryBranchListEffect({ type, payload: { projectId } }, { call, put }) {
-      let data = {};
-      if (projectId) {
-        const res = yield call(projectService.getBranchList, projectId);
-        if (res && res.status === 200) {
-          data = [...res.data];
-        }
-      }
-      yield put({
-        type: 'saveCurrentBranchList',
-        payload: data,
-      });
-    },
+
   },
   subscriptions: {},
 };

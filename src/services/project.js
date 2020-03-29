@@ -18,6 +18,27 @@ export async function getBranchList(projectId){
   });
 }
 
+export async function getContainerList(projectId){
+  return request(`/api/v1/project/${projectId}/containers`, {
+    method: 'GET'
+  });
+}
+
+export async function getAssemblyLineList(projectId){
+  return request(`/api/v1/project/${projectId}/assembly_lines`, {
+    method: 'GET'
+  });
+}
+
+export async function getAssemblyLineLogList(projectId, page, pageSize){
+  return request(`/api/v1/project/${projectId}/assembly_line_logs`, {
+    method: 'GET',
+    params:{
+      page,
+      pageSize
+    }
+  });
+}
 
 
 export async function create(data) {

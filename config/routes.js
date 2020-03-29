@@ -1,4 +1,4 @@
-export default [
+ export default [
   {
     path: '/user',
     component: '../layouts/UserLayout',
@@ -92,6 +92,13 @@ export default [
                 name: '项目详情',
                 icon: '',
                 component: './project/detail',
+                hideInMenu: true,
+              },
+              {
+                path: '/project/assemblyLine/detail',
+                name: '流水线配置',
+                icon: '',
+                component: './assemblyLine/detail',
                 hideInMenu: true,
               },
             ],
