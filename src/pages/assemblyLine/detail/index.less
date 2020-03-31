@@ -1,0 +1,28 @@
+@import '~antd/es/style/themes/default.less';
+@import '../../../utils/utils.less';
+
+.stepList{
+  margin-top: 20px;
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  >div{
+    width: 250px;
+    margin: 0 10px;
+    float: left;
+    >div{
+      min-height: 500px;
+    }
+  }
+
+}
+
+
+.newButton {
+  width: 100%;
+  height: 400px;
+  color: @text-color-secondary;
+  background-color: @component-background;
+  border-color: @border-color-base;
+  border-radius: @border-radius-sm;
+}

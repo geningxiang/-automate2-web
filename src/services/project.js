@@ -30,6 +30,12 @@ export async function getAssemblyLineList(projectId){
   });
 }
 
+export async function getAssemblyLineById(assemblyLineId){
+  return request(`/api/v1/assembly_line/${assemblyLineId}`, {
+    method: 'GET'
+  });
+}
+
 export async function getAssemblyLineLogList(projectId, page, pageSize){
   return request(`/api/v1/project/${projectId}/assembly_line_logs`, {
     method: 'GET',

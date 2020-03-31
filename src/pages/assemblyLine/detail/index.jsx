@@ -1,178 +1,134 @@
-import React, {Component} from 'react';
-import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd';
+import React from 'react';
+import { PageHeaderWrapper } from '@ant-design/pro-layout';
+import { Button, Card, Col, Form, Input, Radio, Row, Spin } from 'antd';
 
-// fake data generator
-const getItems = (count, offset = 0) =>
-  Array.from({length: count}, (v, k) => k).map(k => ({
-    id: `item-${k + offset}`,
-    content: `item ${k + offset}`
-  }));
-
-// a little function to help us with reordering the result
-const reorder = (list, startIndex, endIndex) => {
-  const result = Array.from(list);
-  const [removed] = result.splice(startIndex, 1);
-  result.splice(endIndex, 0, removed);
-
-  return result;
-};
-
-/**
- * Moves an item from one list to another list.
- */
-const move = (source, destination, droppableSource, droppableDestination) => {
-  console.log('move');
-  const sourceClone = Array.from(source);
-  const destClone = Array.from(destination);
-  const [removed] = sourceClone.splice(droppableSource.index, 1);
-
-  destClone.splice(droppableDestination.index, 0, removed);
-
-  const result = {};
-  result[droppableSource.droppableId] = sourceClone;
-  result[droppableDestination.droppableId] = destClone;
-
-  return result;
-};
-
-const grid = 8;
-
-const getItemStyle = (isDragging, draggableStyle) => ({
-  // some basic styles to make the items look a bit nicer
-  userSelect: 'none',
-  padding: grid * 2,
-  margin: `0 0 ${grid}px 0`,
-
-  // change background colour if dragging
-  background: isDragging ? 'lightgreen' : 'grey',
-
-  // styles we need to apply on draggables
-  ...draggableStyle
-});
-
-const getListStyle = isDraggingOver => ({
-  background: isDraggingOver ? 'lightblue' : 'lightgrey',
-  padding: grid,
-  width: 250
-});
-
-const stepList = [
-  {title: 'build', id: 'step1'},
-  {title: 'test', id: 'step2'},
-  {title: 'deploy', id: 'step3'}
-];
-
-class AssemblyLineDetail extends Component {
-  state = {
-    items: {
-      'step1': getItems(10),
-      'step2': getItems(5, 10),
-      'step3': getItems(5, 15
-      )
-    },
-    stepList: stepList
-  };
-
-  /**
-   * A semi-generic way to handle multiple lists. Matches
-   * the IDs of the droppable container to the names of the
-   * source arrays stored in the state.
-   */
-  id2List = {
-    droppable: 'items',
-    droppable2: 'selected'
-  };
+import styles from './index.less';
+import PlusOutlined from "@ant-design/icons/es/icons/PlusOutlined";
+import * as projectService from '../../../services/project.js';
+import StepItem from "./components/StepItem";
+import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 
 
-  onDragEnd = result => {
-    const {source, destination} = result;
+function AssemblyFrom(props) {
 
-    // dropped outside the list
-    if (!destination) {
-      return;
-    }
+  return <Form labelCol={{ span: 6 }}
+    wrapperCol={{ span: 16 }}
+    name="nest-messages"
+    initialValues={props.initialValues}
+    onValuesChange={props.onValuesChange}
+  > 
+  <Row>
+    <Col span={12}>
+      <Form.Item name='name' label="流水线名称" rules={[{ required: true }]}>
+        <Input />
+      </Form.Item>
+      <Form.Item name='branches' label="关联分支">
+        <Input />
+      </Form.Item>
+      <Form.Item name='autoTrigger' label="autoTrigger">
+        <Radio value='true'>是否自动触发</Radio>
+      </Form.Item>
+    </Col>
+    <Col span={12}>
+      <Form.Item name='triggerCron' label="cron表达式">
+        <Input />
+      </Form.Item>
+      <Form.Item name='remark' label="备注">
+        <Input.TextArea autoSize={{ minRows: 3, maxRows: 10 }} />
+      </Form.Item>
+    </Col>
+    </Row>
+  </Form>
+}
 
-    console.log('stepIndex', source.stepIndex);
-    // source 拖拽源
-    // destination 拖拽目标
-    if (source.droppableId === destination.droppableId) {
+class AssemblyLineDetail extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      assemblyLineId: this.props.location.query.assemblyLineId,
+      projectId: this.props.location.query.projectId,
+      loading: true,
+      model: {}
+    };
 
-      const list = reorder(
-        this.state.items[source.droppableId],
-        source.index,
-        destination.index
-      );
-      const currentitems = this.state.items;
-      currentitems[source.droppableId]= list;
-      this.setState({items: currentitems});
+    this.onDragEnd = this.onDragEnd.bind(this);
+  }
+
+  componentDidMount() {
+    if (this.state.assemblyLineId) {
+      projectService.getAssemblyLineById(this.state.assemblyLineId).then(res => {
+        console.log('查询流水线信息', res);
+
+
+        const stepTasks = JSON.parse(res.data.config);
+        console.log('阶段列表', stepTasks);
+
+        const model = { ...this.state.model };
+        model.name = res.data.name;
+        model.remark = res.data.remark;
+        model.branches = res.data.branches;
+        model.autoTrigger = res.data.autoTrigger || false;
+        model.triggerCron = res.data.triggerCron;
+        model.stepTasks = stepTasks;
+        this.setState({
+          model,
+          loading: false
+        })
+
+      });
     } else {
-      const currentitems = this.state.items;
-
-
-      const sourceClone = Array.from( currentitems[source.droppableId]);
-      const destClone = Array.from( currentitems[destination.droppableId]);
-
-      const [removed] = sourceClone.splice(source.index, 1);
-
-      destClone.splice(destination.index, 0, removed);
-
-      currentitems[source.droppableId] = sourceClone;
-      currentitems[destination.droppableId] = destClone;
-
-      this.setState({items: currentitems});
+      this.setState({ loading: false })
     }
-  };
+  }
 
-  // Normally you would want to split things out into separate components.
-  // But in this example everything is just done in one place for simplicity
+  onDragEnd(result) {
+    console.log('onDragEnd', result);
+  }
+
   render() {
-    console.log('state', this.state);
-    return (
-      <div style={{
-        display: 'flex',
-        'justifyContent': 'space-between'
-      }}
-      >
+    const stepTasks = [...(this.state.model.stepTasks || []), null];
+    return <PageHeaderWrapper title={this.state.assemblyLineId ? '流水线配置' : '流水线创建'} loading={this.state.loading}>
+      <Row>
+        <Col span={24}>
+          <Card>
+            {
+              this.state.loading ?
+                <Spin tip="Loading...">
+                  <AssemblyFrom />
+                </Spin> :
+                <AssemblyFrom initialValues={this.state.model}
+                  onValuesChange={(changedValues, allValues) => {
+                    this.setState({ model: allValues });
+                  }} />
+
+            }
+
+          </Card>
+        </Col>
+      </Row>
+
+      <div className={'clearfix ' + styles.stepList}>
+
         <DragDropContext onDragEnd={this.onDragEnd}>
-          {stepList.map((stepItem, stepIndex) => {
-            return <Droppable
-              droppableId={stepItem.id}
-              key={stepIndex}
-            >
-              {(provided, snapshot) => (
-                <div
-                  ref={provided.innerRef}
-                  style={getListStyle(snapshot.isDraggingOver)}>
-                  {this.state.items[stepItem.id].map((item, index) => (
-                    <Draggable
-                      key={item.id}
-                      draggableId={stepIndex + '_' + item.id}
-                      index={index}>
-                      {(provided, snapshot) => (
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                          style={getItemStyle(
-                            snapshot.isDragging,
-                            provided.draggableProps.style
-                          )}>
-                          {item.content}
-                        </div>
-                      )}
-                    </Draggable>
-                  ))}
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
+          {stepTasks.map((item, stepIndex) => {
+            if (item != null) {
+
+              return <StepItem key={stepIndex} stepIndex={stepIndex} {...item} />
+            }
+            return <Card key='step_add' title=''>
+              <Button type="dashed" className={styles.newButton} onClick={() => {
+              }}>
+                <PlusOutlined /> 新增步骤
+              </Button>
+            </Card>
+
           })}
+
         </DragDropContext>
       </div>
-    );
+
+    </PageHeaderWrapper>
   }
 }
 
-
 export default AssemblyLineDetail;
-
