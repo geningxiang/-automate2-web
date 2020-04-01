@@ -38,3 +38,11 @@
   -webkit-box-shadow: 0 2px 0 rgba(0, 0, 0, 0.045);
   box-shadow: 0 2px 0 rgba(0, 0, 0, 0.045);
 }
+.stepItem .stepClose {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: -12px -12px 0 0;
+  width: 24px;
+  height: 24px;
+}

@@ -6,7 +6,8 @@ export default {
   contentWidth: 'Fluid',
   fixedHeader: false,
   autoHideHeader: false,
-  fixSiderbar: false,
+  //是否固定侧边栏
+  fixSiderbar: true,
   colorWeak: false,
   menu: {
     locale: true,

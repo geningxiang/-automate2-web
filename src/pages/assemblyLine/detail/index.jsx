@@ -9,34 +9,37 @@ import StepItem from "./components/StepItem";
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 
 
-function AssemblyFrom(props) {
+function getIndexByDroppableId(droppableId) {
+  return parseInt(droppableId.substring(5));
+}
 
+function AssemblyFrom(props) {
   return <Form labelCol={{ span: 6 }}
     wrapperCol={{ span: 16 }}
     name="nest-messages"
     initialValues={props.initialValues}
     onValuesChange={props.onValuesChange}
-  > 
-  <Row>
-    <Col span={12}>
-      <Form.Item name='name' label="流水线名称" rules={[{ required: true }]}>
-        <Input />
-      </Form.Item>
-      <Form.Item name='branches' label="关联分支">
-        <Input />
-      </Form.Item>
-      <Form.Item name='autoTrigger' label="autoTrigger">
-        <Radio value='true'>是否自动触发</Radio>
-      </Form.Item>
-    </Col>
-    <Col span={12}>
-      <Form.Item name='triggerCron' label="cron表达式">
-        <Input />
-      </Form.Item>
-      <Form.Item name='remark' label="备注">
-        <Input.TextArea autoSize={{ minRows: 3, maxRows: 10 }} />
-      </Form.Item>
-    </Col>
+  >
+    <Row>
+      <Col span={12}>
+        <Form.Item name='name' label="流水线名称" rules={[{ required: true }]}>
+          <Input />
+        </Form.Item>
+        <Form.Item name='branches' label="关联分支">
+          <Input />
+        </Form.Item>
+        <Form.Item name='autoTrigger' label="autoTrigger">
+          <Radio value='true'>是否自动触发</Radio>
+        </Form.Item>
+      </Col>
+      <Col span={12}>
+        <Form.Item name='triggerCron' label="cron表达式">
+          <Input />
+        </Form.Item>
+        <Form.Item name='remark' label="备注">
+          <Input.TextArea autoSize={{ minRows: 3, maxRows: 10 }} />
+        </Form.Item>
+      </Col>
     </Row>
   </Form>
 }
@@ -52,6 +55,7 @@ class AssemblyLineDetail extends React.Component {
     };
 
     this.onDragEnd = this.onDragEnd.bind(this);
+    this.deleteStep = this.deleteStep.bind(this);
   }
 
   componentDidMount() {
@@ -83,6 +87,38 @@ class AssemblyLineDetail extends React.Component {
 
   onDragEnd(result) {
     console.log('onDragEnd', result);
+    const { source, destination } = result;
+    if (!source || !destination) {
+      return;
+    }
+
+    if (source.droppableId === destination.droppableId) {
+      if (source.index === destination.index) {
+        // 同列 顺序没变化
+        return;
+      }
+    }
+
+
+    const sourceStepIndex = getIndexByDroppableId(source.droppableId);
+    const destinationStepIndex = getIndexByDroppableId(destination.droppableId);
+
+    const model = { ...this.state.model };
+    const sourceTaskList = model.stepTasks[sourceStepIndex].tasks;
+    const destinationTaskList = model.stepTasks[destinationStepIndex].tasks;
+
+    // 从源队列删除
+    const [removed] = sourceTaskList.splice(source.index, 1);
+    // 添加到目标队列
+    destinationTaskList.splice(destination.index, 0, removed);
+    this.setState({ model })
+
+  }
+
+  deleteStep(stepIndex) {
+    const model = { ...this.state.model };
+    model.stepTasks.splice(stepIndex, 1);
+    this.setState({ model });
   }
 
   render() {
@@ -107,16 +143,21 @@ class AssemblyLineDetail extends React.Component {
         </Col>
       </Row>
 
-      <div className={'clearfix ' + styles.stepList}>
+      <div className={styles.stepList}>
 
         <DragDropContext onDragEnd={this.onDragEnd}>
           {stepTasks.map((item, stepIndex) => {
             if (item != null) {
 
-              return <StepItem key={stepIndex} stepIndex={stepIndex} {...item} />
+              return <StepItem key={stepIndex} stepIndex={stepIndex} {...item} deleteStep={this.deleteStep} />
             }
             return <Card key='step_add' title=''>
               <Button type="dashed" className={styles.newButton} onClick={() => {
+                const model = { ...this.state.model };
+                model.stepTasks = [...model.stepTasks, {}];
+                this.setState({
+                  model
+                });
               }}>
                 <PlusOutlined /> 新增步骤
               </Button>

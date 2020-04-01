@@ -2,14 +2,20 @@
 @import '../../../utils/utils.less';
 
 .stepList{
-  margin-top: 20px;
+  padding-top: 20px;
   width: 100%;
   overflow-x: auto;
   overflow-y: hidden;
+  white-space:nowrap;
+
   >div{
     width: 250px;
     margin: 0 10px;
-    float: left;
+
+   display: inline-block;
+   vertical-align: top;
+
+
     >div{
       min-height: 500px;
     }
