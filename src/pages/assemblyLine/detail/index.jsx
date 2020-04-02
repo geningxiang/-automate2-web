@@ -56,6 +56,7 @@ class AssemblyLineDetail extends React.Component {
 
     this.onDragEnd = this.onDragEnd.bind(this);
     this.deleteStep = this.deleteStep.bind(this);
+    this.addTask = this.addTask.bind(this);
   }
 
   componentDidMount() {
@@ -121,6 +122,12 @@ class AssemblyLineDetail extends React.Component {
     this.setState({ model });
   }
 
+  addTask(stepIndex){
+    const model = { ...this.state.model };
+    model.stepTasks[stepIndex].tasks = [...(model.stepTasks[stepIndex].tasks || []), {}];
+    this.setState({ model });
+  }
+
   render() {
     const stepTasks = [...(this.state.model.stepTasks || []), null];
     return <PageHeaderWrapper title={this.state.assemblyLineId ? '流水线配置' : '流水线创建'} loading={this.state.loading}>
@@ -149,7 +156,13 @@ class AssemblyLineDetail extends React.Component {
           {stepTasks.map((item, stepIndex) => {
             if (item != null) {
 
-              return <StepItem key={stepIndex} stepIndex={stepIndex} {...item} deleteStep={this.deleteStep} />
+              return <StepItem key={stepIndex}
+               stepIndex={stepIndex}
+               deleteStep={this.deleteStep}
+               addTask={this.addTask}
+               {...item} 
+               
+               />
             }
             return <Card key='step_add' title=''>
               <Button type="dashed" className={styles.newButton} onClick={() => {

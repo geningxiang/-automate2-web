@@ -48,10 +48,9 @@ class StepItem extends React.Component {
                       {taskItem != null
                         ?
                         <div className={styles.taskItem} onClick={() => { console.log('click me') }}> {this.props.stepIndex + '_' + taskIndex} | {taskItem.name}</div>
-                        : <Button type="dashed" onClick={() => {
-                        }}>
-                          <PlusOutlined /> 新增步骤
-                </Button>
+                        : <Button type="dashed" onClick={() => { this.props.addTask(this.props.stepIndex)}}>
+                            <PlusOutlined /> 新增任务
+                          </Button>
                       }
                     </div>)}
                 </Draggable>

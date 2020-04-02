@@ -46,6 +46,15 @@ export async function getAssemblyLineLogList(projectId, page, pageSize){
   });
 }
 
+export async function startAssemblyLine(assemblyLineId, branch, commitId){
+  return request(`/api/v1/assembly_line/${assemblyLineId}/start`, {
+    method: 'POST',
+    params:{
+      branch,
+      commitId
+    }
+  });
+}
 
 export async function create(data) {
   return request('/api/v1/project', {
