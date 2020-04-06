@@ -7,6 +7,7 @@ import PlusOutlined from "@ant-design/icons/es/icons/PlusOutlined";
 import * as projectService from '../../../services/project.js';
 import StepItem from "./components/StepItem";
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
+import TaskConfig from './components/TaskConfig';
 
 
 function getIndexByDroppableId(droppableId) {
@@ -45,18 +46,25 @@ function AssemblyFrom(props) {
 }
 
 class AssemblyLineDetail extends React.Component {
+
   constructor(props) {
     super(props);
+    this.taskId = 1;
     this.state = {
       assemblyLineId: this.props.location.query.assemblyLineId,
       projectId: this.props.location.query.projectId,
       loading: true,
-      model: {}
+      model: {
+        stepTasks: [],
+        currentTaskId: 0,
+      }
     };
 
     this.onDragEnd = this.onDragEnd.bind(this);
     this.deleteStep = this.deleteStep.bind(this);
+    this.deleteTask = this.deleteTask.bind(this);
     this.addTask = this.addTask.bind(this);
+    this.taskClick = this.taskClick.bind(this);
   }
 
   componentDidMount() {
@@ -65,7 +73,16 @@ class AssemblyLineDetail extends React.Component {
         console.log('查询流水线信息', res);
 
 
+
+
         const stepTasks = JSON.parse(res.data.config);
+
+        stepTasks.forEach(item1 => {
+          item1.tasks.forEach(item2 => {
+            item2.id = this.taskId++;
+          })
+        });
+
         console.log('阶段列表', stepTasks);
 
         const model = { ...this.state.model };
@@ -74,7 +91,7 @@ class AssemblyLineDetail extends React.Component {
         model.branches = res.data.branches;
         model.autoTrigger = res.data.autoTrigger || false;
         model.triggerCron = res.data.triggerCron;
-        model.stepTasks = stepTasks;
+        model.stepTasks = stepTasks || [];
         this.setState({
           model,
           loading: false
@@ -86,6 +103,10 @@ class AssemblyLineDetail extends React.Component {
     }
   }
 
+  /**
+   * 拖拽结束
+   * @param {*} result 
+   */
   onDragEnd(result) {
     console.log('onDragEnd', result);
     const { source, destination } = result;
@@ -116,20 +137,65 @@ class AssemblyLineDetail extends React.Component {
 
   }
 
+  /**
+   * 删除一个阶段
+   * @param {*} stepIndex 阶段的下标
+   */
   deleteStep(stepIndex) {
     const model = { ...this.state.model };
     model.stepTasks.splice(stepIndex, 1);
     this.setState({ model });
   }
 
-  addTask(stepIndex){
+  /**
+   * 添加一个任务
+   * @param {*} stepIndex 阶段的下标
+   */
+  addTask(stepIndex, className) {
     const model = { ...this.state.model };
-    model.stepTasks[stepIndex].tasks = [...(model.stepTasks[stepIndex].tasks || []), {}];
+    model.stepTasks[stepIndex].tasks = [...(model.stepTasks[stepIndex].tasks || []), { id: this.taskId++, className: className }];
     this.setState({ model });
+  }
+
+  /**
+   * 删除一个任务
+   * @param {*} stepIndex 阶段下标
+   * @param {*} taskIndex 任务下标
+   */
+  deleteTask(stepIndex, taskIndex) {
+    const model = { ...this.state.model };
+    model.stepTasks[stepIndex].tasks.splice(taskIndex, 1);
+    this.setState({ model });
+  }
+
+  taskClick(id) {
+    if (this.state.currentTaskId === id) {
+      this.setState({ currentTaskId: 0 });
+    } else {
+      this.setState({ currentTaskId: id });
+    }
+  }
+
+  getCurrentTask() {
+    const currentTaskId = this.state.currentTaskId;
+    let currentTask = null;
+    if (this.state.model.stepTasks) {
+      this.state.model.stepTasks.forEach(item1 => {
+        item1.tasks.forEach(item2 => {
+          if (item2.id === currentTaskId) {
+            currentTask =  item2;
+          }
+        });
+      });
+    }
+    return currentTask;
   }
 
   render() {
     const stepTasks = [...(this.state.model.stepTasks || []), null];
+
+    const currentTask = this.getCurrentTask();
+
     return <PageHeaderWrapper title={this.state.assemblyLineId ? '流水线配置' : '流水线创建'} loading={this.state.loading}>
       <Row>
         <Col span={24}>
@@ -155,23 +221,27 @@ class AssemblyLineDetail extends React.Component {
         <DragDropContext onDragEnd={this.onDragEnd}>
           {stepTasks.map((item, stepIndex) => {
             if (item != null) {
-
               return <StepItem key={stepIndex}
-               stepIndex={stepIndex}
-               deleteStep={this.deleteStep}
-               addTask={this.addTask}
-               {...item} 
-               
-               />
+                stepIndex={stepIndex}
+                deleteStep={this.deleteStep}
+                deleteTask={this.deleteTask}
+                addTask={this.addTask}
+                taskClick={this.taskClick}
+                currentTaskId={this.state.currentTaskId}
+                {...item}
+
+              />
             }
             return <Card key='step_add' title=''>
-              <Button type="dashed" className={styles.newButton} onClick={() => {
-                const model = { ...this.state.model };
-                model.stepTasks = [...model.stepTasks, {}];
-                this.setState({
-                  model
-                });
-              }}>
+              <Button type="dashed"
+                className={styles.newButton}
+                onClick={() => {
+                  const model = { ...this.state.model };
+                  model.stepTasks = [...model.stepTasks, {}];
+                  this.setState({
+                    model
+                  });
+                }}>
                 <PlusOutlined /> 新增步骤
               </Button>
             </Card>
@@ -180,6 +250,20 @@ class AssemblyLineDetail extends React.Component {
 
         </DragDropContext>
       </div>
+
+      {currentTask != null
+        ?
+        <Row style={{ marginTop: 12 }}>
+          <Col span={24}>
+            <Card title={<Input value={currentTask.name}/>}>
+              我是具体任务
+              <TaskConfig taskItem={currentTask}/>
+        </Card>
+          </Col>
+        </Row>
+        : null
+      }
+
 
     </PageHeaderWrapper>
   }

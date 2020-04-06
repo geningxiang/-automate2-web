@@ -115,7 +115,7 @@ class ProjectCreateModal extends React.Component {
                     <Input.TextArea autoSize={{ minRows: 3, maxRows: 10 }} />
                 </Form.Item>
                 <Divider/>
-                <Form.Item wrapperCol={{ offset: 0, span: 22 }} style={{'text-align': 'center'}}>
+                <Form.Item wrapperCol={{ offset: 0, span: 22 }} style={{'textAlign': 'center'}}>
                     {
                         isUrlRight ?
                         <Button type="primary" htmlType="submit" disabled={!isUrlRight} >创建</Button>

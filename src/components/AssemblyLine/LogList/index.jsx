@@ -1,6 +1,7 @@
 import React from 'react';
-import {Button, Table} from 'antd';
+import { Button, Table, Tag } from 'antd';
 import * as projectService from '../../../services/project';
+import { router } from "umi";
 
 
 const assemblyLineLogTableColumns = [
@@ -15,31 +16,56 @@ const assemblyLineLogTableColumns = [
     key: 'assemblyLineId',
   },
   {
-    title:'分支',
-    dataIndex:'branch',
+    title: '分支',
+    dataIndex: 'branch',
     key: 'branch'
   },
   {
-    title:'开始时间',
-    dataIndex:'createTime',
+    title: '开始时间',
+    dataIndex: 'createTime',
     key: 'createTime'
   },
   {
-    title:'状态',
-    dataIndex:'status',
-    key: 'status'
+    title: '状态',
+    key: 'status',
+    render: data => {
+      if (data.status === 0) {
+        return <Tag color="blue">等待执行</Tag>;
+      } else if (data.status === 1) {
+        return <Tag color="cyan">执行中</Tag>;
+      } else if (data.status === 2) {
+        return <Tag color="volcano">已取消</Tag>;
+      } else if (data.status === 3) {
+        return <Tag color="red">出错了</Tag>;
+      } else if (data.status === 4) {
+        return <Tag color="green">执行完毕</Tag>;
+      }
+      return <Tag>未知状态:{data.status}</Tag>
+    }
   },
   {
-    title:'结束时间',
-    dataIndex:'endTime',
+    title: '结束时间',
+    dataIndex: 'endTime',
     key: 'endTime'
   },
 
   {
     title: '操作',
     key: 'action',
-    render: (text, record) => (
-      <Button>查看记录</Button>
+    render: (data, record) => (
+
+
+      <Button onClick={
+        item => {
+          router.push({
+            pathname: '/project/assemblyLine/logIndex',
+            query: {
+              assemblyLineLogId: data.id,
+            },
+          })
+        }
+
+      }>查看记录</Button>
     ),
   },
 ];
@@ -62,7 +88,7 @@ class AssemblyLineLogList extends React.Component {
   }
 
   handleTableChange(pagination, filters, sorter) {
-    const pager = {...this.state.pagination};
+    const pager = { ...this.state.pagination };
     pager.current = pagination.current;
     this.setState({
       pagination: pager,
@@ -71,11 +97,11 @@ class AssemblyLineLogList extends React.Component {
   };
 
   queryList(page, pageSize) {
-    this.setState({loading: true});
+    this.setState({ loading: true });
     projectService.getAssemblyLineLogList(this.props.projectId, page, pageSize).then(res => {
       if (res && res.status === 200) {
 
-        const pagination = {...this.state.pagination};
+        const pagination = { ...this.state.pagination };
         pagination.total = res.data.totalElements;
         pagination.pageSize = res.data.pageable.pageSize;
         this.setState({
@@ -84,7 +110,7 @@ class AssemblyLineLogList extends React.Component {
         });
       }
     }).finally(() => {
-      this.setState({loading: false});
+      this.setState({ loading: false });
     });
   }
 

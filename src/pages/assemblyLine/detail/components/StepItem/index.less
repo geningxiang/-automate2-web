@@ -8,7 +8,6 @@
     width: 100%;
     margin-bottom: 12px;
 
-
     line-height: 1.5715;
     position: relative;
     display: inline-block;
@@ -36,6 +35,9 @@
     background-color: #fff;
     border-color: #d9d9d9;
 
+  }
+
+  .current{
     color: #fff;
     background-color: #1890ff;
     border-color: #1890ff;
@@ -52,4 +54,28 @@
     width: 24px;
     height: 24px;
   }
+
+  .taskClose{
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: -8px -8px 0 0;
+    width: 16px;
+    height: 16px;
+    min-width: 16px;
+
+    vertical-align: middle;
+    padding: 2px;
+    >span{
+      width: 10px;
+      height: 10px;
+      vertical-align: top;
+      > svg{
+        width: 10px;
+        height: 10px;
+        vertical-align: top;
+      }
+    }
+  }
 }
+

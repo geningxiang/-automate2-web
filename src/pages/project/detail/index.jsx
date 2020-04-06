@@ -1,11 +1,13 @@
 import React from 'react';
 import {PageHeaderWrapper} from '@ant-design/pro-layout';
-import {Card, Col, Descriptions, Row, Table} from 'antd';
+import {Card, Col, Descriptions, Row, Table, Button} from 'antd';
+import {PlusOutlined, RedoOutlined} from '@ant-design/icons';
 import {connect} from 'dva';
 import ProjectBranchList from '@/components/ProjectBranch/list';
 import ContainerList from "../../../components/Container/List";
 import AssemblyLineList from "../../../components/AssemblyLine/List";
 import AssemblyLineLogList from "../../../components/AssemblyLine/LogList";
+import { router } from "umi";
 
 const gutter = [16, 16];
 
@@ -30,38 +32,6 @@ class ProjectDetail extends React.Component {
   }
 
   render() {
-    const containerTable = {
-      dataSource: [
-        {
-          id: 1,
-          serverName: '测试环境190',
-          name: '测试环境190-Touch-1',
-          version: '3.0.0 | ea0d16f004c0035402ab699e097db93d20a82c5e',
-        },
-        {
-          id: 2,
-          serverName: '预发布环境202',
-          name: '预发布环境202-Touch-1',
-          version: '3.0.0 | ea0d16f004c0035402ab699e097db93d20a82c5e',
-        },
-      ], columns: [
-        {
-          title: '服务器',
-          dataIndex: 'serverName',
-          key: 'serverName',
-        },
-        {
-          title: '容器名称',
-          dataIndex: 'name',
-          key: 'name',
-        },
-        {
-          title: '当前版本',
-          dataIndex: 'version',
-          key: 'version',
-        },
-      ]
-    };
 
     const currentProject = this.props.project.currentProject || {};
 
@@ -78,19 +48,41 @@ class ProjectDetail extends React.Component {
           </Card>
         </Col>
         <Col span={12}>
-          <Card title='分支列表'>
+          <Card title='分支列表'
+           extra={
+            <Button icon={<RedoOutlined />} >同步</Button>
+          }
+          >
             <ProjectBranchList projectId={this.state.projectId}/>
           </Card>
         </Col>
       </Row>
       <Row gutter={gutter}>
         <Col span={12}>
-          <Card title='容器列表'>
+          <Card title='容器列表' 
+            extra={
+              <Button icon={<PlusOutlined />} >新增</Button>
+            }
+          >
             <ContainerList projectId={this.state.projectId}/>
           </Card>
         </Col>
         <Col span={12}>
-          <Card title='流水线列表'>
+          <Card title='流水线列表'
+           extra={
+            <Button icon={<PlusOutlined />} onClick={
+              () => {
+                router.push({
+                  pathname: '/project/assemblyLine/detail',
+                  query: {
+                    projectId: this.state.projectId
+                  },
+                })
+              }
+
+            } >新增</Button>
+          }
+          >
             <AssemblyLineList projectId={this.state.projectId}/>
           </Card>
         </Col>

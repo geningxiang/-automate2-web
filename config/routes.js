@@ -101,6 +101,13 @@
                 component: './assemblyLine/detail',
                 hideInMenu: true,
               },
+              {
+                path: '/project/assemblyLine/logIndex',
+                name: '流水线执行日志',
+                icon: '',
+                component: './assemblyLine/logIndex',
+                hideInMenu: true,
+              },
             ],
           },
           {

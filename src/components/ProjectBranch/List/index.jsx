@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Button, Tag } from 'antd';
+import { Table, Button, Tag, message } from 'antd';
 import * as ProjectService from '@/services/project';
 
 
@@ -30,7 +30,9 @@ const branchTableColumns = [
         title: '操作',
         key: 'action',
         render: (text, record) => (
-            <Button>查看记录</Button>
+            <Button onClick={ () => {
+                message.warn('待开发')
+            } }>查看记录</Button>
         ),
     },
 ];

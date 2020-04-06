@@ -6,6 +6,7 @@ import {connect} from 'dva';
 import styles from './style.less';
 import ProjectCreateModal from '../components/ProjectCreate';
 import {router} from 'umi';
+import * as projectService from '../../../services/project';
 
 const {Paragraph} = Typography;
 
@@ -18,10 +19,16 @@ class ProjectList extends React.Component {
       modalVisible: false,
     };
 
+    this.queryProjectList = this.queryProjectList.bind(this);
     this.modalStatusChangeHandle = this.modalStatusChangeHandle.bind(this);
+    this.fetch = this.fetch.bind(this);
   }
 
   componentDidMount() {
+    this.queryProjectList();
+  }
+
+  queryProjectList(){
     this.props.dispatch({
       type: 'project/queryProjectAllEffect'
     });
@@ -29,6 +36,23 @@ class ProjectList extends React.Component {
 
   modalStatusChangeHandle(isShow) {
     this.setState({modalVisible: !!isShow});
+  }
+
+  fetch(projectId){
+    projectService.fetch(projectId).then(res => {
+      console.log('刷新vcs', res);
+      if(res.status === 200){
+        notification.success({
+          message: '同步成功',
+          description: 'VCS已经是最新的了',
+        })
+      } else {
+        notification.error({
+          message: '同步失败',
+          description: res.msg,
+        })
+      }
+    });
   }
 
   render() {
@@ -60,10 +84,7 @@ class ProjectList extends React.Component {
                         }>详情</a>,
                           <a key="option2"
                              onClick={
-                               () => notification.error({
-                                 message: '操作二',
-                                 description: '亲，您准备干什么呢',
-                               })
+                               () =>  this.fetch(item.id)
                              }
                           >同步</a>]}
                     >

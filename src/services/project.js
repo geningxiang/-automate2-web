@@ -12,6 +12,13 @@ export async function getById(projectId){
   });
 }
 
+
+export async function fetch(projectId){
+  return request(`/api/v1/project/${projectId}/fetch`, {
+    method: 'POST'
+  });
+}
+
 export async function getBranchList(projectId){
   return request(`/api/v1/project/${projectId}/branches`, {
     method: 'GET'
@@ -43,6 +50,13 @@ export async function getAssemblyLineLogList(projectId, page, pageSize){
       page,
       pageSize
     }
+  });
+}
+
+
+export async function getAssemblyLineTaskLogList(assemblyLineLogId){
+  return request(`/api/v1/assembly_line_log/${assemblyLineLogId}/task_logs`, {
+    method: 'GET'
   });
 }
 

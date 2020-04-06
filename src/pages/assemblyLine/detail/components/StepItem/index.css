@@ -31,6 +31,8 @@
   color: rgba(0, 0, 0, 0.65);
   background-color: #fff;
   border-color: #d9d9d9;
+}
+.stepItem .current {
   color: #fff;
   background-color: #1890ff;
   border-color: #1890ff;
@@ -45,4 +47,25 @@
   margin: -12px -12px 0 0;
   width: 24px;
   height: 24px;
+}
+.stepItem .taskClose {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: -8px -8px 0 0;
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  vertical-align: middle;
+  padding: 2px;
+}
+.stepItem .taskClose > span {
+  width: 10px;
+  height: 10px;
+  vertical-align: top;
+}
+.stepItem .taskClose > span > svg {
+  width: 10px;
+  height: 10px;
+  vertical-align: top;
 }

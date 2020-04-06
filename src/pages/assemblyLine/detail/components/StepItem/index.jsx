@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Card, Input } from "antd";
+import { Button, Card, Input, Menu, Dropdown } from "antd";
 import styles from "./index.less";
 import { PlusOutlined, CloseOutlined } from "@ant-design/icons/es/icons";
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
@@ -15,6 +15,20 @@ class StepItem extends React.Component {
   }
 
   render() {
+
+    const menu = (
+      <Menu>
+        <Menu.Item onClick={() => { this.props.addTask(this.props.stepIndex) }}>
+          自定义Shell脚本
+        </Menu.Item>
+        <Menu.Item>
+          Package提取
+        </Menu.Item>
+        <Menu.Item>
+          部署更新
+        </Menu.Item>
+      </Menu>
+    );
 
     const tasks = [...(this.props.tasks || []), null];
     return <Droppable
@@ -41,16 +55,33 @@ class StepItem extends React.Component {
                   isDragDisabled={taskItem == null} >
                   {(provided, snapshot) => (
 
-                    <div ref={provided.innerRef} key={taskIndex}
+                    <div ref={provided.innerRef} key={taskIndex} className={styles.taskList}
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}>
 
                       {taskItem != null
                         ?
-                        <div className={styles.taskItem} onClick={() => { console.log('click me') }}> {this.props.stepIndex + '_' + taskIndex} | {taskItem.name}</div>
-                        : <Button type="dashed" onClick={() => { this.props.addTask(this.props.stepIndex)}}>
-                            <PlusOutlined /> 新增任务
-                          </Button>
+                        <div className={styles.taskItem + ' ' + (this.props.currentTaskId === taskItem.id ? styles.current : '')} onClick={
+                          ()=> {
+                            this.props.taskClick(taskItem.id);
+                          }
+                        }>
+
+                          <Button shape="circle" icon={<CloseOutlined />}
+                            className={styles.taskClose}
+                            danger
+                            onClick={
+                              () => {
+                                this.props.deleteTask(this.props.stepIndex, taskIndex);
+                              }
+                            }
+                          />
+                          {this.props.stepIndex + '_' + taskIndex} | {taskItem.name}
+
+                        </div>
+                        : <Dropdown overlay={menu} placement="bottomLeft">
+                          <Button type="dashed"><PlusOutlined /> 新增任务</Button>
+                        </Dropdown>
                       }
                     </div>)}
                 </Draggable>
