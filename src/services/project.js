@@ -54,6 +54,12 @@ export async function getAssemblyLineLogList(projectId, page, pageSize){
 }
 
 
+export async function getAssemblyLineLogById(assemblyLineLogId){
+  return request(`/api/v1/assembly_line_log/${assemblyLineLogId}`, {
+    method: 'GET'
+  });
+}
+
 export async function getAssemblyLineTaskLogList(assemblyLineLogId){
   return request(`/api/v1/assembly_line_log/${assemblyLineLogId}/task_logs`, {
     method: 'GET'

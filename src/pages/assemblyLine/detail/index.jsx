@@ -181,11 +181,13 @@ class AssemblyLineDetail extends React.Component {
     let currentTask = null;
     if (this.state.model.stepTasks) {
       this.state.model.stepTasks.forEach(item1 => {
-        item1.tasks.forEach(item2 => {
-          if (item2.id === currentTaskId) {
-            currentTask =  item2;
-          }
-        });
+        if (item1.tasks) {
+          item1.tasks.forEach(item2 => {
+            if (item2.id === currentTaskId) {
+              currentTask = item2;
+            }
+          });
+        }
       });
     }
     return currentTask;
@@ -237,7 +239,7 @@ class AssemblyLineDetail extends React.Component {
                 className={styles.newButton}
                 onClick={() => {
                   const model = { ...this.state.model };
-                  model.stepTasks = [...model.stepTasks, {}];
+                  model.stepTasks = [...model.stepTasks || [], {}];
                   this.setState({
                     model
                   });
@@ -255,10 +257,10 @@ class AssemblyLineDetail extends React.Component {
         ?
         <Row style={{ marginTop: 12 }}>
           <Col span={24}>
-            <Card title={<Input value={currentTask.name}/>}>
+            <Card title={<Input value={currentTask.name} />}>
               我是具体任务
-              <TaskConfig taskItem={currentTask}/>
-        </Card>
+              <TaskConfig taskItem={currentTask} />
+            </Card>
           </Col>
         </Row>
         : null
