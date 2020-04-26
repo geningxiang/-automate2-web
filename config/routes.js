@@ -79,13 +79,18 @@
           {
             name: '项目管理',
             icon: 'ProjectOutlined',
-            path: '/project',
             routes: [
               {
                 path: '/project/list',
                 name: '项目列表',
                 icon: 'ProfileOutlined',
                 component: './project/list',
+              },
+              {
+                path: '/product/list',
+                name: '产物列表',
+                icon: 'ProfileOutlined',
+                component: './product/list',
               },
               {
                 path: '/project/detail',
@@ -107,25 +112,6 @@
                 icon: '',
                 component: './assemblyLine/logIndex',
                 hideInMenu: true,
-              },
-            ],
-          },
-          {
-            name: 'MAVEN',
-            icon: 'BankOutlined',
-            path: '/mvn',
-            routes: [
-              {
-                path: '/mvn/list',
-                name: '私有库',
-                icon: 'smile',
-                component: './project/list',
-              },
-              {
-                path: '/mvn/log',
-                name: 'deploy记录',
-                icon: 'smile',
-                component: './project/list',
               },
             ],
           },

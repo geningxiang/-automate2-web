@@ -94,7 +94,8 @@ class AssemblyLineDetail extends React.Component {
         model.stepTasks = stepTasks || [];
         this.setState({
           model,
-          loading: false
+          loading: false,
+          taskClickIndex : 0
         })
 
       });
@@ -169,10 +170,12 @@ class AssemblyLineDetail extends React.Component {
   }
 
   taskClick(id) {
+    const taskClickIndex = this.state.taskClickIndex + 1;
+
     if (this.state.currentTaskId === id) {
-      this.setState({ currentTaskId: 0 });
+      this.setState({ currentTaskId: 0, taskClickIndex });
     } else {
-      this.setState({ currentTaskId: id });
+      this.setState({ currentTaskId: id, taskClickIndex });
     }
   }
 
@@ -257,9 +260,9 @@ class AssemblyLineDetail extends React.Component {
         ?
         <Row style={{ marginTop: 12 }}>
           <Col span={24}>
-            <Card title={<Input value={currentTask.name} />}>
-              我是具体任务
-              <TaskConfig taskItem={currentTask} />
+            <Card>
+              {/* 通过改变key 让子组件重新渲染 */}
+              <TaskConfig key={this.state.taskClickIndex} taskItem={currentTask} />
             </Card>
           </Col>
         </Row>

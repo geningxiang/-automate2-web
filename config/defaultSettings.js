@@ -4,7 +4,8 @@ export default {
   primaryColor: '#1890ff',
   layout: 'sidemenu',
   contentWidth: 'Fluid',
-  fixedHeader: false,
+  //是否固定头部
+  fixedHeader: true,
   autoHideHeader: false,
   //是否固定侧边栏
   fixSiderbar: true,

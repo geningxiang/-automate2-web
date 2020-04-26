@@ -94,3 +94,10 @@ export async function testVcsConnect(vcsType, vcsUrl, vcsUserName, vcsPassWord) 
     },
   });
 }
+
+
+export async function getProductList(){
+  return request('/api/v1/products', {
+    method: 'GET'
+  });
+}

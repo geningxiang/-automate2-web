@@ -71,7 +71,7 @@ const handleRemove = async selectedRows => {
   }
 };
 
-const ServerList = () => {
+const ProductList = () => {
   const [sorter, setSorter] = useState('');
   const [createModalVisible, handleModalVisible] = useState(false);
   const [updateModalVisible, handleUpdateModalVisible] = useState(false);
@@ -258,4 +258,4 @@ const ServerList = () => {
   );
 };
 
-export default ServerList;
+export default ProductList;
