@@ -1,28 +1,25 @@
-@import '~antd/es/style/themes/default.less';
-@import '../../../utils/utils.less';
+@import "~antd/es/style/themes/default.less";
+@import "../../../utils/utils.less";
 
-.stepList{
+.stepList {
   padding-top: 20px;
   width: 100%;
   overflow-x: auto;
   overflow-y: hidden;
-  white-space:nowrap;
+  white-space: nowrap;
 
-  >div{
+  > div {
     width: 250px;
     margin: 0 10px;
 
-   display: inline-block;
-   vertical-align: top;
+    display: inline-block;
+    vertical-align: top;
 
-
-    >div{
+    > div {
       min-height: 500px;
     }
   }
-
 }
-
 
 .newButton {
   width: 100%;
@@ -31,4 +28,16 @@
   background-color: @component-background;
   border-color: @border-color-base;
   border-radius: @border-radius-sm;
+}
+
+.assemblyFooter {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  background-color: grey;
+  text-align: center;
+  padding: 10px 0 0 255px;
+  box-sizing: border-box;
 }

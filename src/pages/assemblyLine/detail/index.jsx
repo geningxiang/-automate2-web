@@ -1,7 +1,7 @@
 import React from 'react';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
-import { Button, Card, Col, Form, Input, Radio, Row, Spin } from 'antd';
-
+import { Button, Card, Col, Form, Input, Radio, Row, Spin, message, Modal } from 'antd';
+import router from 'umi/router';
 import styles from './index.less';
 import PlusOutlined from "@ant-design/icons/es/icons/PlusOutlined";
 import * as projectService from '../../../services/project.js';
@@ -50,11 +50,13 @@ class AssemblyLineDetail extends React.Component {
   constructor(props) {
     super(props);
     this.taskId = 1;
+    const { projectId } = this.props.location.query;
     this.state = {
       assemblyLineId: this.props.location.query.assemblyLineId,
-      projectId: this.props.location.query.projectId,
+      projectId,
       loading: true,
       model: {
+        projectId,
         stepTasks: [],
         currentTaskId: 0,
       }
@@ -65,18 +67,15 @@ class AssemblyLineDetail extends React.Component {
     this.deleteTask = this.deleteTask.bind(this);
     this.addTask = this.addTask.bind(this);
     this.taskClick = this.taskClick.bind(this);
+    this.currentTaskChange = this.currentTaskChange.bind(this);
+    this.save = this.save.bind(this);
   }
 
   componentDidMount() {
     if (this.state.assemblyLineId) {
       projectService.getAssemblyLineById(this.state.assemblyLineId).then(res => {
         console.log('查询流水线信息', res);
-
-
-
-
         const stepTasks = JSON.parse(res.data.config);
-
         stepTasks.forEach(item1 => {
           item1.tasks.forEach(item2 => {
             item2.id = this.taskId++;
@@ -86,6 +85,8 @@ class AssemblyLineDetail extends React.Component {
         console.log('阶段列表', stepTasks);
 
         const model = { ...this.state.model };
+        model.id = res.data.id;
+        model.projectId = res.data.projectId;
         model.name = res.data.name;
         model.remark = res.data.remark;
         model.branches = res.data.branches;
@@ -95,7 +96,7 @@ class AssemblyLineDetail extends React.Component {
         this.setState({
           model,
           loading: false,
-          taskClickIndex : 0
+          taskClickIndex: 0
         })
 
       });
@@ -128,6 +129,9 @@ class AssemblyLineDetail extends React.Component {
 
     const model = { ...this.state.model };
     const sourceTaskList = model.stepTasks[sourceStepIndex].tasks;
+    if (!model.stepTasks[destinationStepIndex].tasks) {
+      model.stepTasks[destinationStepIndex].tasks = [];
+    }
     const destinationTaskList = model.stepTasks[destinationStepIndex].tasks;
 
     // 从源队列删除
@@ -152,9 +156,13 @@ class AssemblyLineDetail extends React.Component {
    * 添加一个任务
    * @param {*} stepIndex 阶段的下标
    */
-  addTask(stepIndex, className) {
+  addTask(stepIndex, className, name) {
     const model = { ...this.state.model };
-    model.stepTasks[stepIndex].tasks = [...(model.stepTasks[stepIndex].tasks || []), { id: this.taskId++, className: className }];
+    model.stepTasks[stepIndex].tasks = [...(model.stepTasks[stepIndex].tasks || []), {
+      id: this.taskId++,
+      className,
+      name
+    }];
     this.setState({ model });
   }
 
@@ -194,6 +202,44 @@ class AssemblyLineDetail extends React.Component {
       });
     }
     return currentTask;
+  }
+
+  currentTaskChange(data) {
+    const { currentTaskId } = this.state;
+
+
+    if (currentTaskId) {
+      const { stepTasks } = this.state.model;
+      stepTasks.forEach(item1 => {
+        if (item1.tasks) {
+          item1.tasks.forEach(item2 => {
+            if (item2.id === currentTaskId) {
+              Object.assign(item2, data);
+              this.setState({ stepTasks });
+              return;
+            }
+          });
+        }
+      });
+    }
+  }
+
+  save() {
+    console.log('save', this.state.model);
+    projectService.saveAssemblyLine(this.state.model).then(res => {
+      console.log('保存流水线', res);
+      if (res.status === 200) {
+        Modal.success({
+          content: '保存成功',
+          onOk() {
+            // 跳转到上一个路由
+            router.goBack()
+          }
+        });
+      } else {
+        message.error(res.msg);
+      }
+    });
   }
 
   render() {
@@ -262,7 +308,7 @@ class AssemblyLineDetail extends React.Component {
           <Col span={24}>
             <Card>
               {/* 通过改变key 让子组件重新渲染 */}
-              <TaskConfig key={this.state.taskClickIndex} taskItem={currentTask} />
+              <TaskConfig key={`current_task_${this.state.taskClickIndex}`} taskItem={currentTask} currentTaskChange={this.currentTaskChange} />
             </Card>
           </Col>
         </Row>
@@ -270,6 +316,14 @@ class AssemblyLineDetail extends React.Component {
       }
 
 
+      <div className={styles.assemblyFooter}>
+        <Button type="primary" size="large" onClick={this.save} >保存</Button>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <Button size="large" onClick={() => {
+          router.goBack()
+        }} >取消</Button>
+
+      </div>
     </PageHeaderWrapper>
   }
 }

@@ -43,11 +43,16 @@ class TaskConfig extends React.Component {
         return <Form
             {...layout}
             initialValues={this.props.taskItem}
+            onValuesChange={
+                (changedValues, allValues) => {
+                    this.props.currentTaskChange(allValues);
+                }
+            }
         >
             <Form.Item
                 label="任务名称"
                 name="name"
-                rules={[{ required: true }]}
+                rules={[{ required: true}]}
             ><Input />
             </Form.Item>
             <TaskExtend taskClassName={className} />

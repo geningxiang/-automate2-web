@@ -18,13 +18,13 @@ class StepItem extends React.Component {
 
     const menu = (
       <Menu>
-        <Menu.Item onClick={() => { this.props.addTask(this.props.stepIndex) }}>
+        <Menu.Item onClick={() => { this.props.addTask(this.props.stepIndex, 'com.github.gnx.automate.assemblyline.config.ExecTask', '自定义Shell脚本') }}>
           自定义Shell脚本
         </Menu.Item>
-        <Menu.Item>
-          Package提取
+        <Menu.Item onClick={() => { this.props.addTask(this.props.stepIndex, 'com.github.gnx.automate.assemblyline.config.ProductPickTask', '产物提取') }}>
+          产物提取
         </Menu.Item>
-        <Menu.Item>
+        <Menu.Item onClick={() => { this.props.addTask(this.props.stepIndex, 'com.github.gnx.automate.assemblyline.config.ApplicationUpdateTask', '部署更新') }}>
           部署更新
         </Menu.Item>
       </Menu>
@@ -76,8 +76,8 @@ class StepItem extends React.Component {
                               }
                             }
                           />
-                          {this.props.stepIndex + '_' + taskIndex} | {taskItem.name}
-
+                          {/* {this.props.stepIndex + '_' + taskIndex} */}
+                          {taskItem.name}
                         </div>
                         : <Dropdown overlay={menu} placement="bottomLeft">
                           <Button type="dashed"><PlusOutlined /> 新增任务</Button>

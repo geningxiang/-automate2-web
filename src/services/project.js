@@ -6,73 +6,92 @@ export async function findAll() {
   });
 }
 
-export async function getById(projectId){
+export async function getById(projectId) {
   return request(`/api/v1/project/${projectId}`, {
-    method: 'GET'
+    method: 'GET',
   });
 }
 
-
-export async function fetch(projectId){
+export async function fetch(projectId) {
   return request(`/api/v1/project/${projectId}/fetch`, {
-    method: 'POST'
+    method: 'POST',
   });
 }
 
-export async function getBranchList(projectId){
+export async function getBranchList(projectId) {
   return request(`/api/v1/project/${projectId}/branches`, {
-    method: 'GET'
+    method: 'GET',
   });
 }
 
-export async function getContainerList(projectId){
+export async function getContainerList(projectId) {
   return request(`/api/v1/project/${projectId}/containers`, {
-    method: 'GET'
+    method: 'GET',
   });
 }
 
-export async function getAssemblyLineList(projectId){
+export async function getAssemblyLineList(projectId) {
   return request(`/api/v1/project/${projectId}/assembly_lines`, {
-    method: 'GET'
+    method: 'GET',
   });
 }
 
-export async function getAssemblyLineById(assemblyLineId){
+export async function getAssemblyLineById(assemblyLineId) {
   return request(`/api/v1/assembly_line/${assemblyLineId}`, {
-    method: 'GET'
+    method: 'GET',
   });
 }
 
-export async function getAssemblyLineLogList(projectId, page, pageSize){
+export async function saveAssemblyLine(assemblyLineEntity) {
+  if (assemblyLineEntity.id) {
+    return request(`/api/v1/assembly_line/${assemblyLineEntity.id}`, {
+      method: 'PUT',
+      body: JSON.stringify(assemblyLineEntity),
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    });
+  }
+  return request(`/api/v1/project/${assemblyLineEntity.projectId}/assembly_line`, {
+    method: 'POST',
+    body: JSON.stringify(assemblyLineEntity),
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  });
+}
+
+export async function getAssemblyLineLogList(projectId, page, pageSize) {
   return request(`/api/v1/project/${projectId}/assembly_line_logs`, {
     method: 'GET',
-    params:{
+    params: {
       page,
-      pageSize
-    }
+      pageSize,
+    },
   });
 }
 
-
-export async function getAssemblyLineLogById(assemblyLineLogId){
+export async function getAssemblyLineLogById(assemblyLineLogId) {
   return request(`/api/v1/assembly_line_log/${assemblyLineLogId}`, {
-    method: 'GET'
+    method: 'GET',
   });
 }
 
-export async function getAssemblyLineTaskLogList(assemblyLineLogId){
+export async function getAssemblyLineTaskLogList(assemblyLineLogId) {
   return request(`/api/v1/assembly_line_log/${assemblyLineLogId}/task_logs`, {
-    method: 'GET'
+    method: 'GET',
   });
 }
 
-export async function startAssemblyLine(assemblyLineId, branch, commitId){
+export async function startAssemblyLine(assemblyLineId, branch, commitId) {
   return request(`/api/v1/assembly_line/${assemblyLineId}/start`, {
     method: 'POST',
-    params:{
+    params: {
       branch,
-      commitId
-    }
+      commitId,
+    },
   });
 }
 
@@ -95,9 +114,8 @@ export async function testVcsConnect(vcsType, vcsUrl, vcsUserName, vcsPassWord) 
   });
 }
 
-
-export async function getProductList(){
+export async function getProductList() {
   return request('/api/v1/products', {
-    method: 'GET'
+    method: 'GET',
   });
 }
