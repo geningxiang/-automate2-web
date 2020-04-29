@@ -1,6 +1,6 @@
 import React from 'react';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
-import { Button, Card, Col, Form, Input, Radio, Row, Spin, message, Modal } from 'antd';
+import { Button, Card, Col, Form, Input, Radio, Row, Spin, message, Modal, Switch } from 'antd';
 import router from 'umi/router';
 import styles from './index.less';
 import PlusOutlined from "@ant-design/icons/es/icons/PlusOutlined";
@@ -29,8 +29,8 @@ function AssemblyFrom(props) {
         <Form.Item name='branches' label="关联分支">
           <Input />
         </Form.Item>
-        <Form.Item name='autoTrigger' label="autoTrigger">
-          <Radio value='true'>是否自动触发</Radio>
+        <Form.Item name='autoTrigger' label="自动触发" valuePropName="checked">
+          <Switch value="true" />
         </Form.Item>
       </Col>
       <Col span={12}>
@@ -69,6 +69,7 @@ class AssemblyLineDetail extends React.Component {
     this.taskClick = this.taskClick.bind(this);
     this.currentTaskChange = this.currentTaskChange.bind(this);
     this.save = this.save.bind(this);
+    this.changeStepName = this.changeStepName.bind(this);
   }
 
   componentDidMount() {
@@ -177,6 +178,12 @@ class AssemblyLineDetail extends React.Component {
     this.setState({ model });
   }
 
+  changeStepName(stepIndex, stepName) {
+    const model = { ...this.state.model };
+    model.stepTasks[stepIndex].stepName = stepName;
+    this.setState({ model });
+  }
+
   taskClick(id) {
     const taskClickIndex = this.state.taskClickIndex + 1;
 
@@ -276,6 +283,7 @@ class AssemblyLineDetail extends React.Component {
                 stepIndex={stepIndex}
                 deleteStep={this.deleteStep}
                 deleteTask={this.deleteTask}
+                changeStepName={this.changeStepName}
                 addTask={this.addTask}
                 taskClick={this.taskClick}
                 currentTaskId={this.state.currentTaskId}

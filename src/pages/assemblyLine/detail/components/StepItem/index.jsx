@@ -37,7 +37,11 @@ class StepItem extends React.Component {
       {(provided, snapshot) => (
         <div ref={provided.innerRef} key={this.props}>
           <Card
-            title={<Input addonBefore='阶段:' value={this.props.stepName} placeholder='请输入阶段名称' />}
+            title={<Input addonBefore='阶段:' value={this.props.stepName} placeholder='请输入阶段名称'
+            onChange={
+              e=> this.props.changeStepName && this.props.changeStepName(this.props.stepIndex, e.target.value)
+            }
+            />}
             extra={
               <Button shape="circle" icon={<CloseOutlined />}
                 className={styles.stepClose}
