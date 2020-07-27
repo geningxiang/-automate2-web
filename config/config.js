@@ -79,6 +79,8 @@ const plugins = [
 
 export default {
   plugins,
+  //使用 hash模式
+  history: 'hash',
   hash: true,
   targets: {
     ie: 11,

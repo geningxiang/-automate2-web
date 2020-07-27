@@ -315,8 +315,13 @@ class AssemblyLineDetail extends React.Component {
         <Row style={{ marginTop: 12 }}>
           <Col span={24}>
             <Card>
+              
               {/* 通过改变key 让子组件重新渲染 */}
-              <TaskConfig key={`current_task_${this.state.taskClickIndex}`} taskItem={currentTask} currentTaskChange={this.currentTaskChange} />
+              <TaskConfig 
+              key={`current_task_${this.state.taskClickIndex}`} 
+              taskItem={currentTask} 
+              currentTaskChange={this.currentTaskChange} />
+
             </Card>
           </Col>
         </Row>

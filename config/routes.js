@@ -30,28 +30,6 @@
             component: './Welcome',
           },
           {
-            path: '/admin',
-            name: 'admin',
-            icon: 'crown',
-            component: './Admin',
-            authority: ['admin'],
-            routes: [
-              {
-                path: '/admin/sub-page',
-                name: 'sub-page',
-                icon: 'smile',
-                component: './Welcome',
-                authority: ['admin'],
-              },
-            ],
-          },
-          {
-            name: '列表展示',
-            icon: 'table',
-            path: '/list',
-            component: './ListTableList',
-          },
-          {
             name: '应用管理',
             icon: 'ApartmentOutlined',
             path: '/server',
@@ -63,10 +41,10 @@
                 component: './server/list',
               },
               {
-                path: '/server/applicationList',
+                path: '/server/containerList',
                 name: '应用列表',
                 icon: 'AppstoreOutlined',
-                component: './Welcome',
+                component: './server/ContainerList',
               },
               {
                 path: '/server/application/updateLog',
